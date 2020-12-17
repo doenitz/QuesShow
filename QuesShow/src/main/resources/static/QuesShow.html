@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/x-icon" href="asset/favicon.png"/>
+	<link rel="stylesheet" href="asset/myedit.css">
+    <link href="asset/bootstrap/css/bootstrap.css" rel="stylesheet">
+<!--    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+    <script src="asset/jquery.min.js"></script>
+    <script src="asset/vue.js"></script>
+    <title>试题属性</title>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>试题详情展示</h1>
+</div>
+
+<div class="nav">
+<!-- 左侧导航 -->
+        
+            <ul class="uld">
+                <li class="li"><a href="#home">试题属性</a></li>
+				<li class="li"><a href="QuesSearch.html">搜题</a></li>
+            </ul>
+</div>
+
+<div class="section">
+<!-- 右侧内容 -->
+    <div id="div1" style="margin: 20px auto;">
+        <form  action="" method="" style="display: inline-block;">
+            <h3 style="float: left;">Guid:</h3>
+            <input id="id" name="id" v-model="guid" style="width: 300px;height: 36px;margin-top: 16px;float: left;" placeholder="输入Guid" class="form-control">
+            <button id="addCategory" type="button" @click="getProperty()" style="font-size: 18px;margin-left: 15px;margin-top: 13px;outline: none;" class="btn btn-success">属性</button>
+            <button type="button" @click="getQuesShow()" style="font-size: 18px;margin-top: 13px;outline: none;" class="btn btn-success">试题</button>
+<!--            <button type="button" @click="getRedisInfo()" style="font-size: 18px;margin-top: 13px;outline: none;" class="btn btn-success">应用环境试题</button>-->
+            <br>
+            <br>
+<!--            <div>-->
+<!--                输入作文词数:<input id="updateComposition" name="CompositionNum" v-model="CompositionNum" style="width: 300px;height: 24px;">-->
+<!--                <button id="addComposition" type="button" @click="updateComposition()" style="font-size: 18px;">修改作文词数</button>-->
+<!--            </div>-->
+
+            <div id="navbar" class="navbar-collapse collapse">
+                    <div class="form-group">
+                        <input id="updateComposition" name="CompositionNum" v-model="CompositionNum" placeholder="输入作文词数" class="form-control" style="width: 180px;margin-left: 42px;">
+                    </div>
+                    <button id="addComposition" @click="updateComposition()" type="button" class="btn btn-success" style="margin-left: 230px;margin-top: -87px;outline: none;">修改作文词数</button>
+
+            </div>
+
+        </form>
+        <BR>
+        <table border='1' cellspacing='0' style="width: 800px;">
+            <tr>
+                <td>阶段</td>
+                <td>题型</td>
+                <td>体裁</td>
+                <td>属性</td>
+                <td>作答方式</td>
+                <td>题目形式</td>
+                <td>选项个数</td>
+                <td>音频时长</td>
+                <td>篇章长度</td>
+                <td>题干长度</td>
+                <td>答案词数</td>
+                <td>题干形式</td>
+                <td>地区</td>
+                <td>作文字数</td>
+                <td>小题数</td>
+                <td>句子数量</td>
+                <td>答题点数量</td>
+            </tr>
+            <tr >
+                <td>{{categories.stage}}</td>
+                <td>{{categories.type}}</td>
+                <td>{{categories.genre}}</td>
+                <td>{{categories.newProperty}}</td>
+                <td>{{categories.answerWay}}</td>
+                <td>{{categories.topicForm}}</td>
+                <td>{{categories.optionNum}}</td>
+                <td>{{categories.audioTime}}</td>
+                <td>{{categories.quesBodyNum}}</td>
+                <td>{{categories.quesAskNum}}</td>
+                <td>{{categories.answerWord}}</td>
+                <td>{{categories.quesAskForm}}</td>
+                <td>{{categories.area}}</td>
+                <td>{{categories.compositionNum}}</td>
+                <td>{{categories.quesChildCount}}</td>
+                <td>{{categories.sentenceNum}}</td>
+                <td>{{categories.childNumProperty}}</td>
+            </tr>
+        </table>
+
+
+    </div>
+
+</div>
+<script>
+    var vm = new Vue({
+        el:'#div1',
+        data:{
+            categories:'',
+            guid:'',
+            contentXml:'',
+            CompositionNum:''
+        },
+        methods:{
+            updateComposition:function(){
+                var that=this;
+                var page="/composition";
+                $.ajax({
+                    url:page,
+                    type:"post",
+                    datatype:"json",
+                    data:{guid:this.guid,CompositionNum:this.CompositionNum,Stage:this.categories.stage},
+                    success:function (result) {
+                        alert(result);
+                        that.getProperty();
+                        //console.log(that);
+                        //$("#addCategory").click();
+                    },
+                    error:function () {
+                      alert("请求失败，请正确输入")
+                    }
+                })
+            },
+            getQuesShow:function(){
+                window.open("http://172.16.42.142:9039/tquesview.html?guids=" + this.guid + "&stage=" + this.categories.subStage.substring(1,2) + "");
+            },
+            getProperty:function () {
+                var page="/category/"+this.guid;
+                var that = this;
+                $.ajax({
+                    url:page,
+                    type:"get",
+                    success:function (result) {
+                        if (result.stage==null){
+                            alert("请求失败，试题可能未入库，请检查!");
+                        }else {
+                            that.categories = result;
+                        }
+                    },
+                    error:function () {
+                        alert("请求失败，试题可能未入库!");
+                    }
+                })
+            },
+            // getRedisInfo:function () {
+            //     window.open("RedisDate.html");
+            //
+            // }
+        }
+    })
+    // function add(id,name) {
+    //     var page="/category";
+    //     $.ajax({
+    //         url:page,
+    //         type:"get",
+    //         datatype:"json",
+    //         data:$("#addForm").serialize(),
+    //         success:function () {
+    //             location.reload()
+    //         }
+    //     })
+    // }
+</script>
+</body>
+</html>

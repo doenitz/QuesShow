@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="application/json">
+    <script src="asset/jquery.min.js"></script>
+    <title>首页</title>
+</head>
+
+<body>
+<div id="app">
+    welcome!
+</div>
+<script>
+$(document).ready(function(){
+    RedisInfo();
+});
+    function RedisInfo(){
+        var page="http://60.12.93.76:10103/webapi_aisearch/api/TQuesInfo/GetNormalTQuesInfo";
+        var Guids = [];
+        Guids.push("8CC4E7C43955448485044A025CACC696");
+
+        $.ajax({
+            url:page,
+            type:"post",
+            dataType: "json",
+            data: { Guids: JSON.stringify(Guids), IsPathAbsolute:true},
+            success:function (result) {
+               $("#app").html(JSON.stringify(result));
+
+            },
+            error:function () {
+                alert("请求失败，试题可能未入库!");
+            }
+        })
+    }
+</script>
+</body>
+</html>

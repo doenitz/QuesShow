@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.getData">
+    <!-- 目的:为DAO接口方法提供sql语句配置-->
+    <update id="updateCompositionNum" parameterType="Composition">
+        update dbo.Lgdb_question_classify_${Stage} set compositionNum=#{CompositionNum} where Guid=#{guid}
+    </update>
+    <select id="getGuidByContent" resultType="BasicInfo" parameterType="BasicInfo">
+        SELECT Top 1 Guid,QuesContent,QuesStdnContent FROM dbo.Lgdb_Ques_Basicinfo_${Stage}H WHERE QuesType=#{Type} AND CAST(QuesStdnContent AS NVARCHAR(max))
+        LIKE '%${Content}%'
+    </select>
+    <select id="getTypes" resultType="TypeEntity">
+        SELECT QUESTYPE_CODE,QUESTYPE_NAME FROM dbo.Lgdb_Basic_QuesType
+                    WHERE REC_ID IN (SELECT REC_ID FROM dbo.Lgdb_Basic_Course_QuesType
+                    WHERE COURSE_CODE='C' AND VERSION_CODE = #{stage})
+    </select>
+    <select id="findById" resultType="Category">
+        SELECT * FROM dbo.Lgdb_question_classify_${stage} WHERE Guid=#{id}
+    </select>
+    <select id="getStageFromSummary" resultType="String">
+        SELECT TABLE_NAME FROM dbo.Lgdb_Summary_UserProfile WHERE GUID=#{guid}
+    </select>
+
+
+</mapper>
