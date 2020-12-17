@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="asset/myedit.css">
+    <link rel="shortcut icon" type="image/x-icon" href="asset/favicon.png"/>
+    <link href="asset/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!--    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="vueElement/node_modules/element-ui/lib/theme-chalk/index.css">
+    <script src="asset/jquery.min.js"></script>
+    <script src="asset/vue.js"></script>
+    <title>搜题</title>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>试题详情展示</h1>
+</div>
+
+<div class="nav">
+    <!-- 左侧导航 target="_blank" -->
+
+    <ul class="uld">
+        <li class="li"><a href="QuesShow.html">试题属性</a></li>
+        <li class="li"><a href="#home">搜题</a></li>
+    </ul>
+</div>
+
+<div class="section">
+    <!-- 右侧内容 -->
+    <div id="div1" style="margin: 20px auto;">
+        <el-select id="stages" v-model="SubStage" placeholder="请选择" @change="getTypes()"
+                   style="width: 10%;margin-left: 20px;float: left;">
+            <el-option
+                    v-for="im in stage"
+                    :key="im.value"
+                    :label="im.label"
+                    :value="im.value">
+            </el-option>
+        </el-select>
+        <el-select v-model="type" id="type" placeholder="请选择" style="width: 10%;margin-left: 20px;float: left;">
+            <el-option
+                    v-for="item in types"
+                    :key="item.questype_CODE"
+                    :label="item.questype_NAME"
+                    :value="item.questype_CODE">
+            </el-option>
+        </el-select>
+        <textarea id="id" name="id" v-model="guid" class="form-control"
+                  style="width: 300px;margin-left: 20px;float: left" placeholder="Guid"></textarea>
+        <P id="labVal" style="float: left">{{labVal}}</P>
+        <br>
+        <div id="navbar" class="navbar-collapse collapse">
+            <br><br><br>
+            <div class="form-group">
+                <input id="updateComposition" name="Content" v-model="Content" placeholder="输入查询内容" class="form-control"
+                       style="width: 800px;margin-left: 5px;float: left">
+
+                <button id="addComposition" @click="getGuid()" type="button" class="btn btn-success"
+                        style="margin-left:10px;float: left;outline: none;">搜索
+                </button>
+                <br><br>
+            </div>
+            <textarea id="contOri" name="cont" v-model="QuesContent" class="form-control"
+                      style="height:480px;width: 49%;margin-left: 5px;float: left"
+                      placeholder="原始QuesContent"></textarea>
+            <textarea id="cont" name="cont" v-model="QuesStdnContent" class="form-control"
+                      style="height:480px;width: 49%;margin-left: 5px;float: left"
+                      placeholder="标准化QuesStdnContent"></textarea>
+        </div>
+    </div>
+
+</div>
+<!-- 引入组件库 -->
+<script src="vueElement/node_modules/element-ui/lib/index.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#div1',
+        data: {
+            QuesStdnContent: '',
+            QuesContent: '',
+            labVal: '',
+            guid: '',
+            Content: '',
+            types: [],
+            type: '',
+            SubStage: '',
+            stage: [
+                {
+                    value: 'CB',
+                    label: '初中'
+                }, {
+                    value: 'CC',
+                    label: '高中'
+                }, {
+                    value: 'CE',
+                    label: '高职'
+                }, {
+                    value: 'CF',
+                    label: '大学公共英语'
+                }, {
+                    value: 'CH',
+                    label: '大学专业英语'
+                }
+            ]
+        },
+        mounted: function () {
+
+        },
+        methods: {
+            getGuid: function () {
+                var that = this;
+                var page = "/content";
+                that.labVal = "正在搜索...";
+                $.ajax({
+                    url: page,
+                    type: "get",
+                    datatype: "json",
+                    data: {Content: that.Content, Stage: that.SubStage, Type: that.type},
+                    success: function (result) {
+                        that.labVal = "SUCCESS";
+                        that.guid = result.guid;
+                        that.QuesStdnContent = result.quesStdnContent;
+                        that.QuesContent=result.quesContent;
+                    },
+                    error: function () {
+                        that.labVal = "未能找到...";
+                    }
+                })
+            },
+
+            getTypes: function () {
+                var that = this;
+                var page = "/type/" + that.SubStage.substring(1, 2);
+                $.ajax({
+                    url: page,
+                    type: "get",
+                    success: function (result) {
+                        that.types = result;
+                    }
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>
